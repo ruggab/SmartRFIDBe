@@ -18,7 +18,7 @@ public class SwaggerConfig implements WebFluxConfigurer {
 				.title("My Domain object API").version("1.0.0").build()).enable(true).select()
 				.apis(RequestHandlerSelectors.basePackage("net.smart.rfid.controller")).paths(PathSelectors.any()).build();
 
-	}
+	} 
  
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
