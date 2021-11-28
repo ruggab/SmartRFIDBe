@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import net.smart.rfid.db.entity.Clients;
 import net.smart.rfid.db.repository.ClientRepository;
 import net.smart.rfid.db.repository.ClientRepository.ClientConfig;
+import net.smart.rfid.db.repository.ClientRepository.CompanyPrefix;
+import net.smart.rfid.db.repository.ClientRepository.CompanyStock;
 import net.smart.rfid.response.ClientResp;
 
 @RestController
@@ -25,12 +27,31 @@ public class ClientApi {
 
 	@Autowired
 	private ClientRepository clientRepository;
+	
+	@GetMapping("/getStock")
+	public CompanyStock getStock(@RequestParam(value = "idsite", required = true)String idsite) throws Exception {
+		try {
+			
+			List<CompanyStock> stockList = clientRepository.getCompanyStock(idsite);
+			if (stockList.size() > 0) {
+				return  stockList.get(0);
+			}
+			return  null;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
 
 	@GetMapping("/getCompanyPrefix")
-	public List<Clients> getCompanyPrefix() throws Exception {
+	public CompanyPrefix getCompanyPrefix(@RequestParam(value = "mac", required = true)String mac) throws Exception {
 		try {
-			List<Clients> client = clientRepository.findAll();
-			return client;
+			
+			List<CompanyPrefix> prefixList = clientRepository.getCompanyPrefix(mac);
+			if (prefixList.size() > 0) {
+				return  prefixList.get(0);
+			}
+			return  null;
 		} catch (Exception e) {
 			throw e;
 		}
@@ -69,6 +90,12 @@ public class ClientApi {
 					clientResp.setListings(new ArrayList<ClientConfig>());
 					
 					//Insert client enable false
+					Clients clients = new Clients();
+					clients.setMac(mac);
+					clients.setDescription(description);
+					clients.setEnabled(false);
+					clientRepository.save(clients);
+					//clients.insertClient();
 				}
 			}
 			

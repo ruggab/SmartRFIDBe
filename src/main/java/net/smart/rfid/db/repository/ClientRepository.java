@@ -39,4 +39,23 @@ public interface ClientRepository extends JpaSpecificationExecutor<Clients>, Jpa
 		JsonNode getVw_step();
 	}
 	
+	
+	@Query(value = "select (SELECT case when json_agg(y.value)\\:\\:text = '[null]' then '[]'\\:\\: json else json_agg(y.value)\\:\\: json end AS json_agg "
+			+ "FROM filters y where type = 'C' and id_customer in (select id_customer from clients where mac = ?1)) AS prefix", nativeQuery=true )
+	public List<CompanyPrefix>  getCompanyPrefix(String mac) throws Exception;
+	
+	public interface CompanyPrefix {
+	    @Column(columnDefinition = "jsonb")
+		JsonNode getPrefix();
+	}
+	
+	
+	@Query(value = "select ( SELECT case when json_agg(y.epc)\\:\\:text = '[null]' then '[]'\\:\\:json else json_agg(y.epc)\\:\\:json end AS json_agg "
+			 + "FROM stocksite y where idsite = ?1) AS stock", nativeQuery=true )
+	public List<CompanyStock>  getCompanyStock(String mac) throws Exception;
+	
+	public interface CompanyStock {
+	    @Column(columnDefinition = "jsonb")
+		JsonNode getStock();
+	}
 }
