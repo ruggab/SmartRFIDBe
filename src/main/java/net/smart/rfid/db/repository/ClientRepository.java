@@ -40,6 +40,18 @@ public interface ClientRepository extends JpaSpecificationExecutor<Clients>, Jpa
 	}
 	
 	
+	@Query(value = "SELECT f.id_customer, "
+			+ " f.idflow,"
+			+ " f.description,"
+			+ " json_agg(s.*) as vw_step"
+			+ " FROM flow f "
+			+ " JOIN vw_step2 s ON f.idflow = s.idflow and s.idclient = ?1 "
+			+ " GROUP BY f.idflow, f.description ", nativeQuery=true )
+	public List<ClientConfig>  getClientConfigQC(Long idClinet) throws Exception;
+	
+	
+	
+	
 	@Query(value = "select (SELECT case when json_agg(y.value)\\:\\:text = '[null]' then '[]'\\:\\: json else json_agg(y.value)\\:\\: json end AS json_agg "
 			+ "FROM filters y where type = 'C' and id_customer in (select id_customer from clients where mac = ?1)) AS prefix", nativeQuery=true )
 	public List<CompanyPrefix>  getCompanyPrefix(String mac) throws Exception;
@@ -58,4 +70,21 @@ public interface ClientRepository extends JpaSpecificationExecutor<Clients>, Jpa
 	    @Column(columnDefinition = "jsonb")
 		JsonNode getStock();
 	}
+	
+	
+	@Query(value = "select c.id_customer, zpl from printers_templates t"
+			+ "	join clients c on c.id_customer = t.id_customer "
+			+ "	where c.id = ?1", nativeQuery=true )
+	public List<ClientConfigScanPrint>  getClientConfigScanPrint(Long idClinet) throws Exception;
+	
+	public interface ClientConfigScanPrint {
+		Integer getId_customer();
+		Integer getZpl();
+	}
+	
+	
+	
+	
+	
+	
 }
