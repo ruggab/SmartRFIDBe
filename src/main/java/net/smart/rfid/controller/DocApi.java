@@ -203,7 +203,7 @@ public class DocApi {
 			@RequestParam(value = "idsite", required = false)Integer idsite,
 			@RequestParam(value = "idlocation", required = false) Integer idlocation, 
 			@RequestParam(value = "idstep", required = false)Integer idstep,
-			@RequestParam(value = "units", required = false) String units
+			@RequestParam(value = "units", required = false) Integer units
 			) throws Exception {
 		try {
 			Response response = new Response();

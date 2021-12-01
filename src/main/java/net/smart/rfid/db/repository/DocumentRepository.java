@@ -192,13 +192,13 @@ public interface DocumentRepository extends JpaSpecificationExecutor<Documents>,
 	@Query(value = "select * from updatediary(:epc,:sku,:idsite,:idlocation,:idstep,:sign)", nativeQuery=true )
 	public void  updateDiary(@Param ("epc") String epc, @Param ("sku") String sku, @Param ("idsite") Integer idsite,
 			                 @Param ("idlocation") Integer idlocation, @Param ("idstep") Integer idstep,
-			                 @Param ("sign") String sign) throws Exception;
+			                 @Param ("sign") Integer sign) throws Exception;
 	
 	
 	
 	@Query(value = "select s.epc, s.sku, coalesce(d.epc, null, 'S') err,"
 			+ "	coalesce (d.id_location , null, -1) id_location "
-			+ "	coalesce (l.description , null, '') ds_location "
+			//+ "	coalesce (l.description , null, '') ds_location "
 			+ "	from scanner_detail s "
 			+ "	join documents x on x.id = s.iddoc "
 			+ "	left join stockdiary d on s.epc = d.epc "
@@ -207,8 +207,8 @@ public interface DocumentRepository extends JpaSpecificationExecutor<Documents>,
 			+ "	id_location = x.origin_location "
 			+ "	else "
 			+ "	id_location in(select id from location l where idsite = x.idsite) end "
-			+ "	where s.iddoc = $1 and s.epc is not null "
-			+ "	group by s.epc, s.sku, d.epc, d.id_location ", nativeQuery=true )
+			+ "	where s.iddoc = :iddoc and s.epc is not null "
+			+ "	group by s.epc, s.sku, d.epc, d.id_location ", nativeQuery=true)
 	public List<LocEpc>  getLocEpc(@Param ("iddoc") Integer iddoc) throws Exception;
 
 	public interface LocEpc {
