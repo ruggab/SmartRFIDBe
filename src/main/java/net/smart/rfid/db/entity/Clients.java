@@ -1,6 +1,5 @@
 package net.smart.rfid.db.entity;
 
-import java.io.Serializable;
 import javax.persistence.*;
 
 /**
