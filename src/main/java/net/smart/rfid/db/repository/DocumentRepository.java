@@ -220,5 +220,34 @@ public interface DocumentRepository extends JpaSpecificationExecutor<Documents>,
 	}
 	
 	
+//	@Query(value = "insert into documents "
+//			+ "	(doc_number, doc_date, doc_ref, doc_origin, idflow, idstep, idsite, id_document_type, idsite_dest, origin_location) "
+//			+ "	values "
+//			+ "	(:doc_number, now() , :doc_ref, :doc_origin, :idflow, :idstep, :idsite_dest, (select id_doctype_default "
+//			+ "	from step s join step_type t on s.idsteptype = t.idstep_type "
+//			+ "	where s.idstep = :idstep), :idlocation, :origin_location) returning id", nativeQuery=true)
+//	public void saveDocDoctTypeDef(@Param ("doc_number") Integer doc_number,
+//			@Param ("doc_ref") String doc_ref,
+//			@Param ("doc_origin") String doc_origin,
+//			@Param ("idflow") Integer idflow,
+//			@Param ("idstep") Integer idstep,
+//			@Param ("idsite_dest") Integer idsite_dest,
+//			@Param ("idlocation") Integer idlocation,
+//			@Param ("origin_location") Integer origin_location) throws Exception;
+//	
+//	@Query(value = "insert into documents "
+//			+ "	(doc_number, doc_date, doc_ref, doc_origin, idflow, idstep, idsite, id_document_type, idsite_dest, origin_location) "
+//			+ "	values "
+//			+ "	(:doc_number, now() , :doc_ref, :doc_origin, :idflow, :idstep, :idsite_dest, (select id_doctype_default2 "
+//			+ "	from step s join step_type t on s.idsteptype = t.idstep_type "
+//			+ "	where s.idstep = :idstep), :idlocation, :origin_location) returning id", nativeQuery=true)
+//	public void saveDocDoctTypeDef2(@Param ("doc_number") Integer doc_number,
+//			@Param ("doc_ref") String doc_ref,
+//			@Param ("doc_origin") String doc_origin,
+//			@Param ("idflow") Integer idflow,
+//			@Param ("idstep") Integer idstep,
+//			@Param ("idsite_dest") Integer idsite_dest,
+//			@Param ("idlocation") Integer idlocation,
+//			@Param ("origin_location") Integer origin_location) throws Exception;
 	
 }

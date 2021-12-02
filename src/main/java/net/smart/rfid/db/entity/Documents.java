@@ -3,27 +3,31 @@ package net.smart.rfid.db.entity;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
 
 /**
  * The persistent class for the "documents" database table.
  * 
  */
 @Entity
-@Table(name="documents")
+@Table(name = "documents")
 public class Documents {
 
 	@Id
-	private int id;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE,  generator = "documents_id_seq")
+	@SequenceGenerator( name = "documents_id_seq", allocationSize = 1)
+	private Integer id;
 
 	private Timestamp docDate;
 
 	private Timestamp docDateClosed;
 
 	private Timestamp docDateLastRead;
-	
+
 	private Timestamp docDateStartRead;
 
 	private String docDestination;
@@ -69,11 +73,11 @@ public class Documents {
 	public Documents() {
 	}
 
-	public int getId() {
-		return this.id;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
