@@ -245,11 +245,28 @@ public class DocApi {
 				doc.setIdDocumentType(stepType.getIdDoctypeDefault());
 			}
 			doc = documentRepository.save(doc);
+			doc.setDocNumber(doc.getId());
+			doc = documentRepository.save(doc);
 			DocNewResp docNewResp = new DocNewResp();
 			docNewResp.setId_server("Server");
 			docNewResp.setMessage("Doc Creato");
 			docNewResp.setDocument_id(doc.getId());
 			return docNewResp;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	
+	@GetMapping("/setExpected")
+	public DocLocEpcResp setExpected(@RequestParam(value = "iddoc", required = false) Integer iddoc) throws Exception {
+		try {
+			DocLocEpcResp response = new DocLocEpcResp();
+			List<LocEpc> docFilterList = documentRepository.getLocEpc(iddoc);
+			response.setId_server("Server");
+			response.setMessage("Loc Epc L,ist");
+			response.setListings(docFilterList);
+			return response;
 		} catch (Exception e) {
 			throw e;
 		}
