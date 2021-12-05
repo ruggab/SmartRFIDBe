@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.smart.rfid.db.entity.Documents;
+import net.smart.rfid.db.entity.DocumentsDetail;
 import net.smart.rfid.db.entity.StepType;
+import net.smart.rfid.db.repository.DocumentDetailRepository;
 import net.smart.rfid.db.repository.DocumentRepository;
 import net.smart.rfid.db.repository.DocumentRepository.DocDetail;
 import net.smart.rfid.db.repository.DocumentRepository.DocumentsFilter;
@@ -37,6 +39,9 @@ public class DocApi {
 
 	@Autowired
 	private DocumentRepository documentRepository;
+	
+	@Autowired
+	private DocumentDetailRepository documentDetailRepository;
 
 	@Autowired
 	private StepTypeRepository stepTypeRepository;
@@ -257,19 +262,53 @@ public class DocApi {
 		}
 	}
 	
-	
-	@GetMapping("/setExpected")
-	public DocLocEpcResp setExpected(@RequestParam(value = "iddoc", required = false) Integer iddoc) throws Exception {
+	@GetMapping("/newDocFromTemplate")
+	public DocNewResp newDocFromTemplate(@RequestParam(value = "doc_ref", required = false) String doc_ref, 
+			@RequestParam(value = "idflow", required = false) Integer idflow, 
+			@RequestParam(value = "idstep", required = false) Integer idstep, 
+			@RequestParam(value = "idlocation", required = false) Integer idlocation, 
+			@RequestParam(value = "doctype", required = false) String doctype,
+			@RequestParam(value = "iddoc_template", required = false) Integer iddoc_template) throws Exception {
+
 		try {
-			DocLocEpcResp response = new DocLocEpcResp();
-			List<LocEpc> docFilterList = documentRepository.getLocEpc(iddoc);
-			response.setId_server("Server");
-			response.setMessage("Loc Epc L,ist");
-			response.setListings(docFilterList);
-			return response;
+			if (iddoc_template.equals("undefined") || iddoc_template == null) {
+				iddoc_template = -1;
+			}
+			//
+			Documents doc = new Documents();
+			doc.setDocNumber(0);
+			doc.setDocRef(doc_ref);
+			doc.setDocOrigin("Server");
+			doc.setIdflow(idflow);
+			doc.setIdstep(idstep);
+			doc.setIdsite(idlocation);
+			doc.setIdsiteDest(-1);
+			//
+			StepType stepType = stepTypeRepository.getDocTypeByStep(idstep);
+			if (doctype != null  && !doctype.equals("undefined") && !doctype.trim().equals("")) {
+				doc.setIdDocumentType(stepType.getIdDoctypeDefault2());
+			} else {
+				doc.setIdDocumentType(stepType.getIdDoctypeDefault());
+			}
+			doc = documentRepository.save(doc);
+			doc.setDocNumber(doc.getId());
+			doc = documentRepository.save(doc);
+			//insert 
+			List<DocumentsDetail> listDocDet = documentDetailRepository.findByIddoc(iddoc_template);
+			for (DocumentsDetail dt : listDocDet) {
+				DocumentsDetail dtNew = new DocumentsDetail();
+				dtNew.setSku(dt.getSku());
+				dtNew.setIddoc(dt.getIddoc());
+				documentDetailRepository.save(dtNew);
+			}
+			//
+			DocNewResp docNewResp = new DocNewResp();
+			docNewResp.setId_server("Server");
+			docNewResp.setMessage("Doc Creato");
+			docNewResp.setDocument_id(doc.getId());
+			return docNewResp;
 		} catch (Exception e) {
 			throw e;
 		}
 	}
-
 }
