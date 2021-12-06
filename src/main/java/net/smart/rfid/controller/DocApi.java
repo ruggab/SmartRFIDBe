@@ -3,15 +3,12 @@ package net.smart.rfid.controller;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.jdom.DocType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import net.smart.rfid.db.entity.Documents;
 import net.smart.rfid.db.entity.DocumentsDetail;
 import net.smart.rfid.db.entity.StepType;
