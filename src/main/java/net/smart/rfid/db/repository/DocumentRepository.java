@@ -219,9 +219,9 @@ public interface DocumentRepository extends JpaSpecificationExecutor<Documents>,
 		String getDs_location();
 	}
 	
-	@Query(value = "insert into documents_detail (sku, iddoc) select sku, '+_iddoc+' "
-			+ " from documents_detail where iddoc = '+_iddoc_template;", nativeQuery=true )
-	public void  addDocTemplate(@Param ("iddoc") Integer iddoc) throws Exception;
+//	@Query(value = "insert into documents_detail (sku, iddoc) select sku, '+_iddoc+' "
+//			+ " from documents_detail where iddoc = '+_iddoc_template;", nativeQuery=true )
+//	public void  addDocTemplate(@Param ("iddoc") Integer iddoc) throws Exception;
 	
 
 	

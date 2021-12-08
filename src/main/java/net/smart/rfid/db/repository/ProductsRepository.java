@@ -9,15 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+
 import com.fasterxml.jackson.databind.JsonNode;
 
-import net.smart.rfid.db.entity.Clients;
-
 @Repository
-public interface ProductsRepository extends JpaSpecificationExecutor<Object>, JpaRepository<Object, Long> {
-	
-
-	
+public interface ProductsRepository extends JpaSpecificationExecutor<net.smart.rfid.db.entity.Product>, JpaRepository<net.smart.rfid.db.entity.Product, Long> {
 	
 	
 	
@@ -75,6 +71,19 @@ public interface ProductsRepository extends JpaSpecificationExecutor<Object>, Jp
 	
 	
 	
+	@Query(value = "SELECT json_agg(y.*) AS products FROM products y", nativeQuery=true )
+	public List<Products>  getProducts() throws Exception;
+	
+	public interface Products {
+	    @Column(columnDefinition = "jsonb")
+		JsonNode getProducts();
+	}
+	
+	
+	
+	@Query(value = "select ( SELECT json_agg(y.*) AS json_agg "
+			+ "  FROM products y) AS products where sku in (select sku from documents_details where iddoc = ?1 )", nativeQuery=true )
+	public List<Products>  getDocProducts(Integer iddoc) throws Exception;
 	
 	
 	
