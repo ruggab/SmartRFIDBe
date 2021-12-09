@@ -1,6 +1,7 @@
 package net.smart.rfid.db.repository;
 
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -8,6 +9,7 @@ import javax.persistence.Column;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -87,7 +89,18 @@ public interface ProductsRepository extends JpaSpecificationExecutor<net.smart.r
 	
 	
 	
+	@Query(value = "select ( SELECT json_agg(y.*) AS json_agg FROM products y where sku in (:sku) ) AS products", nativeQuery=true )
+	public List<Products>  getSellProducts(@Param ("sku") String sku) throws Exception;
 	
+	
+	@Query(value = "select p.*, epc, ts from stockdiary left join products p on sku = barcode where barcode = :sku and id_site = :idsite ", nativeQuery=true )
+	public List<ProductStockEpc>  getStockEPC(@Param ("sku") String sku, @Param ("idsite") Integer idsite) throws Exception;
+	
+	
+	public interface ProductStockEpc extends Product{
+		String getEpc();
+		Date getTs();
+	}
 	
 	
 }
