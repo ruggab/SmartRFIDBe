@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import net.smart.rfid.db.entity.FiegeStock;
 import net.smart.rfid.db.repository.ProductsRepository;
 import net.smart.rfid.db.repository.ProductsRepository.ProductSellStock;
 import net.smart.rfid.db.repository.ProductsRepository.ProductSellStock2;
@@ -20,6 +21,7 @@ import net.smart.rfid.db.repository.ProductsRepository.ProductStockAnag4;
 import net.smart.rfid.db.repository.ProductsRepository.ProductStockEpc;
 import net.smart.rfid.db.repository.ProductsRepository.ProductStockSku;
 import net.smart.rfid.db.repository.ProductsRepository.Products;
+import net.smart.rfid.response.FiegeStockResp;
 import net.smart.rfid.response.ProductEpcResp;
 import net.smart.rfid.response.ProductSellStock2Resp;
 import net.smart.rfid.response.ProductSellStockResp;
@@ -254,20 +256,20 @@ public class ProductsApi {
 	}
 
 	
-//	@GetMapping("/getFiegeStock")
-//	public ProductSellStock2Resp getFiegeStock(@RequestParam(value = "sku", required = true)String sku) throws Exception {
-//		try {
-//			ProductSellStock2Resp resp = new ProductSellStock2Resp();
-//			List<ProductSellStock2> listProducts = productsRepository.getSellStock2(idSite, epc);
-//			if (listProducts.size() > 0) {
-//				resp.setListings(listProducts);
-//			}
-//			resp.setId_server("Server");
-//			resp.setMessage("Sell Stock");
-//			return  resp;
-//		} catch (Exception e) {
-//			throw e;
-//		}
-//	}
+	@GetMapping("/getFiegeStock")
+	public FiegeStockResp getFiegeStock(@RequestParam(value = "sku", required = true)String sku) throws Exception {
+		try {
+			FiegeStockResp resp = new FiegeStockResp();
+			List<FiegeStock> listProducts = productsRepository.getFiegeStock(sku);
+			if (listProducts.size() > 0) {
+				resp.setListings(listProducts);
+			}
+			resp.setId_server("Server");
+			resp.setMessage("Fiege Stock");
+			return  resp;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
 
 }

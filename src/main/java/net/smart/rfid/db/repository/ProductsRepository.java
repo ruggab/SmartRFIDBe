@@ -14,6 +14,8 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import net.smart.rfid.db.entity.FiegeStock;
+
 @Repository
 public interface ProductsRepository extends JpaSpecificationExecutor<net.smart.rfid.db.entity.Product>, JpaRepository<net.smart.rfid.db.entity.Product, Long> {
 	
@@ -369,11 +371,8 @@ public interface ProductsRepository extends JpaSpecificationExecutor<net.smart.r
 	
 	
 	@Query(value = "select * from fiege_stock where sku = :sku ", nativeQuery=true )
-	public List<ProductSellStock2>  getFiegeStock(@Param ("sku") String sku) throws Exception;
+	public List<FiegeStock>  getFiegeStock(@Param ("sku") String sku) throws Exception;
 
-//	public interface ProductSellStock2 {
-//		String getId_location();
-//		String getUnits();
-//	}
+
 	
 }
