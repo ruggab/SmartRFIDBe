@@ -6,9 +6,11 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -161,6 +163,9 @@ public interface DocumentRepository extends JpaSpecificationExecutor<Documents>,
 	@Query(value = "SELECT * from active_scan where iddoc = :iddoc ", nativeQuery=true )
 	public List<ScanDetail>  getScanDetail(@Param ("iddoc") Integer iddoc) throws Exception;
 	
+	@Query(value = "SELECT * from active_scan2 where iddoc = :iddoc order by idscan desc limit 1  ", nativeQuery=true )
+	public List<ScanDetail>  getScanDetail2(@Param ("iddoc") Integer iddoc) throws Exception;
+	
 	public interface ScanDetail {
 		Integer getIdscan();
 		Integer getIddoc();
@@ -223,6 +228,128 @@ public interface DocumentRepository extends JpaSpecificationExecutor<Documents>,
 //			+ " from documents_detail where iddoc = '+_iddoc_template;", nativeQuery=true )
 //	public void  addDocTemplate(@Param ("iddoc") Integer iddoc) throws Exception;
 	
+
+	@Modifying
+	@Transactional
+	@Query(value="insert into documents_detail "
+			+ "(epc, sku, iddoc) "
+			+ "select epc, barcode, ?1 from stockdiary "
+			+ "where id_site = ?2 and id_location = ?3 "
+			+ "group by epc,barcode,id_location "
+			+ "having sum(units) > 0 ", 
+			  nativeQuery = true)
+	void insertEpcFromDiary(Integer iddoc, Integer idsite, Integer idlocation);
+	
+	
+	@Modifying
+	@Transactional
+	@Query(value="delete from documents_detail where sku in "
+			+ "(select "
+			+ "sku from products "
+			+ "where (code, variant, colourcode) "
+			+ "(select code, variant, colourcode "
+			+ "from products where sku = ?2)) and iddoc = ?1 ", 
+			  nativeQuery = true)
+	void deleteExpected(Integer iddoc, String sku);
+	
+	@Modifying
+	@Transactional
+	@Query(value="insert into documents_detail "
+			+ "(sku, iddoc) "
+			+ "select "
+			+ "sku, ?1 from products "
+			+ "where (code, variant, colourcode) in "
+			+ "(select code, variant, colourcode "
+			+ "from products where sku = ?2) ", 
+			  nativeQuery = true)
+	void setExpected(Integer iddoc, String sku);
+	
+	@Modifying
+	@Transactional
+	@Query(value="update documents set filter_type = 2 where id = ?1 ", 
+			  nativeQuery = true)
+	void updateFilterType(Integer iddoc);
+	
+	
+	
+	
+	public interface ILocationBySite {
+		String getTs();
+		Integer getUnits();
+		String getSign2();
+		Integer getId_location();
+		String getLocdesc();
+		Integer getId_site();
+		String getSitedesc();
+		String getEpc();
+		String getBarcode();
+		Integer getId_document();
+		Integer getId_reason();
+		String getReadesc();
+		Integer getId_doctype();
+		String getDoctypedesc();
+		Integer getId();
+		String getDoc_ref();
+		String getSign();
+	}
+	
+	
+	@Query(value = "select ts, sum(units), case when d.units < 0 then '-' else '+' end sign2, "
+			  +"id_location, l.description locdesc, id_site, s.description sitedesc , "
+			  +"epc, barcode, id_document, id_reason, r.description readesc, y.id_doctype, "
+			  +"y.description doctypedesc, x.id, x.doc_ref, r.sign "
+			  +"from stockdiary d join sites s on d.id_site = s.id "
+			  +"join location l on l.id = d.id_location "
+			  +"join reason r on r.id = d.id_reason "
+			  +"left join documents x on x.id = d.id_document "
+			  +"left join documents_type y on x.id_document_type = y.id_doctype "
+			  +"where epc = :epc "
+			  +"group by ts, d.id, d.units, l.description, id_location, l.description, "
+			  +"id_site, s.description , epc, barcode, id_document, id_reason, "
+			  +"r.description, y.id_doctype, y.description, x.id, x.doc_ref, r.sign "
+			  +"order by ts, d.id  ", nativeQuery=true)
+	public List<ILocationBySite>  getEpcHistory(@Param ("epc") String epc) throws Exception;
+	
+	
+	@Query(value = "select ts, sum(units), case when d.units < 0 then '-' else '+' end sign2, "
+			  +"id_location, l.description locdesc, id_site, s.description sitedesc , "
+			  +"epc, barcode, id_document, id_reason, r.description readesc, y.id_doctype, "
+			  +"y.description doctypedesc, x.id, x.doc_ref, r.sign "
+			  +"from stockdiary d join sites s on d.id_site = s.id "
+			  +"join location l on l.id = d.id_location "
+			  +"join reason r on r.id = d.id_reason "
+			  +"left join documents x on x.id = d.id_document "
+			  +"left join documents_type y on x.id_document_type = y.id_doctype "
+			  +"where epc = :epc and sign = '+' and id_site = :idsite "
+			  +"group by ts, d.id, d.units, l.description, id_location, l.description, "
+			  +"id_site, s.description , epc, barcode, id_document, id_reason, "
+			  +"r.description, y.id_doctype, y.description, x.id, x.doc_ref, r.sign "
+			  +"order by ts desc, d.id desc "
+			  +"limit 1", nativeQuery=true)
+	public List<ILocationBySite>  getEpcLocationBySite(@Param ("epc") String epc, @Param ("idsite") String idsite ) throws Exception;
+
+	
+	@Query(value = "select ts, sum(units), case when d.units < 0 then '-' else '+' end sign2, "
+			  +"id_location, l.description locdesc, id_site, s.description sitedesc , "
+			  +"epc, barcode, id_document, id_reason, r.description readesc, y.id_doctype, "
+			  +"y.description doctypedesc, x.id, x.doc_ref, r.sign, "
+			  +"(select id_location "
+			  +"from stockdiary where epc = :epc "
+			  +"and id_site = :idsite and units = 1 "
+			  +"order by ts desc ,id desc "
+			  +"limit 1) current_location "
+			  +"from stockdiary d join sites s on d.id_site = s.id "
+			  +"join location l on l.id = d.id_location "
+			  +"join reason r on r.id = d.id_reason "
+			  +"left join documents x on x.id = d.id_document "
+			  +"left join documents_type y on x.id_document_type = y.id_doctype "
+			  +"where  barcode = :sku and epc <> :epc and sign = '+' and id_site =:idsite "
+			  +"group by ts, d.id, d.units, l.description, id_location, l.description, "
+			  +"id_site, s.description , epc, barcode, id_document, id_reason, "
+			  +"r.description, y.id_doctype, y.description, x.id, x.doc_ref, r.sign "
+			  +"order by ts desc, d.id desc "
+			  +"limit 1", nativeQuery=true)
+	public List<ILocationBySite>  getSkuLocationBySite(@Param ("sku") String sku, @Param ("epc") String epc, @Param ("idsite") String idsite ) throws Exception;
 
 	
 }

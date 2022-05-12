@@ -1,5 +1,7 @@
 package net.smart.rfid.controller;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -16,6 +18,7 @@ import net.smart.rfid.db.repository.DocumentDetailRepository;
 import net.smart.rfid.db.repository.DocumentRepository;
 import net.smart.rfid.db.repository.DocumentRepository.DocDetail;
 import net.smart.rfid.db.repository.DocumentRepository.DocumentsFilter;
+import net.smart.rfid.db.repository.DocumentRepository.ILocationBySite;
 import net.smart.rfid.db.repository.DocumentRepository.LocEpc;
 import net.smart.rfid.db.repository.DocumentRepository.ScanDetail;
 import net.smart.rfid.db.repository.DocumentRepository.Ticket;
@@ -26,6 +29,7 @@ import net.smart.rfid.response.DocNewResp;
 import net.smart.rfid.response.DocResp;
 import net.smart.rfid.response.DocScanDetailResp;
 import net.smart.rfid.response.DocTicketResp;
+import net.smart.rfid.response.LocationBySiteResp;
 import net.smart.rfid.response.Response;
 
 @RestController
@@ -44,7 +48,9 @@ public class DocApi {
 	private StepTypeRepository stepTypeRepository;
 
 	@GetMapping("/getDoc")
-	public DocResp getDoc(@RequestParam(value = "idflow", required = false) Integer idflow, @RequestParam(value = "idstep", required = false) Integer idstep, @RequestParam(value = "idlocation", required = false) Integer idlocation) throws Exception {
+	public DocResp getDoc(@RequestParam(value = "idflow", required = false) Integer idflow, 
+			@RequestParam(value = "idstep", required = false) Integer idstep, 
+			@RequestParam(value = "idlocation", required = false) Integer idlocation) throws Exception {
 
 		try {
 			DocResp documentResp = new DocResp();
@@ -59,7 +65,9 @@ public class DocApi {
 	}
 
 	@GetMapping("/getTicket")
-	public DocTicketResp getTicket(@RequestParam(value = "idflow", required = false) Integer idflow, @RequestParam(value = "idstep", required = false) Integer idstep, @RequestParam(value = "idlocation", required = false) Integer idlocation) throws Exception {
+	public DocTicketResp getTicket(@RequestParam(value = "idflow", required = false) Integer idflow, 
+			@RequestParam(value = "idstep", required = false) Integer idstep, 
+			@RequestParam(value = "idlocation", required = false) Integer idlocation) throws Exception {
 
 		try {
 			DocTicketResp docTicketResp = new DocTicketResp();
@@ -77,11 +85,23 @@ public class DocApi {
 	public DocDetailResp getDocDet(@RequestParam(value = "iddoc", required = false) Integer iddoc) throws Exception {
 
 		try {
-			
-			System.out.println("****** "+iddoc);
-			
 			DocDetailResp docDetailResp = new DocDetailResp();
 			List<DocDetail> docFilterList = documentRepository.getDocDetail(iddoc);
+			docDetailResp.setId_server("Server");
+			docDetailResp.setMessage("Doc List");
+			docDetailResp.setListings(docFilterList);
+			return docDetailResp;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	@GetMapping("/getDocDet2")
+	public DocDetailResp getDocDet2(@RequestParam(value = "iddoc", required = false) Integer iddoc) throws Exception {
+
+		try {
+			DocDetailResp docDetailResp = new DocDetailResp();
+			List<DocDetail> docFilterList = documentRepository.getDocDetail2(iddoc);
 			docDetailResp.setId_server("Server");
 			docDetailResp.setMessage("Doc List");
 			docDetailResp.setListings(docFilterList);
@@ -107,7 +127,10 @@ public class DocApi {
 	}
 
 	@GetMapping("/setScanWrite")
-	public Response setScanWrite(@RequestParam(value = "epcin", required = false) String epcin, @RequestParam(value = "epcout", required = false) String epcout, @RequestParam(value = "skuin", required = false) String skuin, @RequestParam(value = "skuin", required = false) String skuout) throws Exception {
+	public Response setScanWrite(@RequestParam(value = "epcin", required = false) String epcin, 
+			@RequestParam(value = "epcout", required = false) String epcout, 
+			@RequestParam(value = "skuin", required = false) String skuin, 
+			@RequestParam(value = "skuin", required = false) String skuout) throws Exception {
 
 		try {
 			Response response = new Response();
@@ -122,7 +145,8 @@ public class DocApi {
 	}
 
 	@GetMapping("/clearDoc")
-	public Response clearDoc(@RequestParam(value = "iddoc", required = false) Integer iddoc, @RequestParam(value = "docType", required = false) String docType) throws Exception {
+	public Response clearDoc(@RequestParam(value = "iddoc", required = false) Integer iddoc, 
+			@RequestParam(value = "docType", required = false) String docType) throws Exception {
 
 		try {
 			Response response = new Response();
@@ -168,7 +192,9 @@ public class DocApi {
 	}
 
 	@GetMapping("/getDocTemplate")
-	public DocTicketResp getDocTemplate(@RequestParam(value = "idflow", required = false) Integer idflow, @RequestParam(value = "idstep", required = false) Integer idstep, @RequestParam(value = "idlocation", required = false) Integer idlocation) throws Exception {
+	public DocTicketResp getDocTemplate(@RequestParam(value = "idflow", required = false) Integer idflow, 
+			@RequestParam(value = "idstep", required = false) Integer idstep, 
+			@RequestParam(value = "idlocation", required = false) Integer idlocation) throws Exception {
 
 		try {
 			DocTicketResp docTicketResp = new DocTicketResp();
@@ -196,7 +222,11 @@ public class DocApi {
 	}
 
 	@GetMapping("/updateDiary")
-	public Response updateDiary(@RequestParam(value = "epc", required = false) String epc, @RequestParam(value = "sku", required = false) String sku, @RequestParam(value = "idsite", required = false) Integer idsite, @RequestParam(value = "idlocation", required = false) Integer idlocation, @RequestParam(value = "idstep", required = false) Integer idstep,
+	public Response updateDiary(@RequestParam(value = "epc", required = false) String epc, 
+			@RequestParam(value = "sku", required = false) String sku, 
+			@RequestParam(value = "idsite", required = false) Integer idsite, 
+			@RequestParam(value = "idlocation", required = false) Integer idlocation, 
+			@RequestParam(value = "idstep", required = false) Integer idstep,
 			@RequestParam(value = "units", required = false) Integer units) throws Exception {
 		try {
 			Response response = new Response();
@@ -224,39 +254,87 @@ public class DocApi {
 	}
 
 	@GetMapping("/newDoc")
-	public DocNewResp newDoc(@RequestParam(value = "doc_ref", required = false) String doc_ref, @RequestParam(value = "idflow", required = false) Integer idflow, @RequestParam(value = "idstep", required = false) Integer idstep, @RequestParam(value = "idlocation", required = false) Integer idlocation, @RequestParam(value = "doctype", required = false) String doctype,
-			@RequestParam(value = "idsite_dest", required = false) Integer idsite_dest, @RequestParam(value = "origin_location", required = false) Integer origin_location) throws Exception {
+	public DocNewResp newDoc(@RequestParam(value = "doc_ref", required = false) String doc_ref, 
+			@RequestParam(value = "idflow", required = false) Integer idflow, 
+			@RequestParam(value = "idstep", required = false) Integer idstep, 
+			@RequestParam(value = "idlocation", required = false) Integer idlocation, 
+			@RequestParam(value = "doctype", required = false) String doctype,
+			@RequestParam(value = "idsite_dest", required = false) Integer idsite_dest, 
+			@RequestParam(value = "origin_location", required = false) Integer origin_location,
+			@RequestParam(value = "location_filter", required = false) Integer location_filter
+			) throws Exception {
 
 		try {
-			if (idsite_dest.equals("undefined") || idsite_dest == null) {
+			if (idsite_dest == null) {
 				idsite_dest = -1;
 			}
-			if (origin_location.equals("undefined") || origin_location == null) {
+			if (origin_location == null) {
 				origin_location = -1;
 			}
+			
+			if(location_filter==null)
+				location_filter = -1;
+			
 			Documents doc = new Documents();
 			doc.setDocNumber(0);
 			doc.setDocRef(doc_ref);
 			doc.setDocOrigin("Server");
+			doc.setDocDate(new Timestamp(new Date().getTime()));
 			doc.setIdflow(idflow);
 			doc.setIdstep(idstep);
 			doc.setIdsite(idlocation);
 			doc.setIdsiteDest(idsite_dest);
 			doc.setOriginLocation(origin_location);
 			StepType stepType = stepTypeRepository.getDocTypeByStep(idstep);
-			if (doctype != null  && !doctype.equals("undefined") && !doctype.trim().equals("")) {
+			
+			if (doctype != null && !doctype.trim().equals("")) {
 				doc.setIdDocumentType(stepType.getIdDoctypeDefault2());
 			} else {
 				doc.setIdDocumentType(stepType.getIdDoctypeDefault());
 			}
+			if(location_filter<1) {
+				// do nothing
+			}
+			else {
+				doc.setFilterType(2);
+			}
+			
 			doc = documentRepository.save(doc);
+			
 			doc.setDocNumber(doc.getId());
 			doc = documentRepository.save(doc);
+			
+			
+			if(location_filter>1)
+				documentRepository.insertEpcFromDiary(doc.getId(), idlocation, location_filter);
+			
+			
 			DocNewResp docNewResp = new DocNewResp();
 			docNewResp.setId_server("Server");
 			docNewResp.setMessage("Doc Creato");
 			docNewResp.setDocument_id(doc.getId());
 			return docNewResp;
+		} catch (Exception e) {	
+			throw e;
+		}
+	}
+	
+	@GetMapping("/setExpected")
+	public DocDetailResp setExpected(@RequestParam(value = "iddoc", required = false) Integer iddoc, 
+			@RequestParam(value = "sku", required = false) String sku) throws Exception {
+		try {
+			DocDetailResp response = new DocDetailResp();
+			
+			documentRepository.deleteExpected(iddoc, sku);
+			documentRepository.setExpected(iddoc, sku);
+			documentRepository.updateFilterType(iddoc);
+			
+			List<DocDetail> listings = documentRepository.getDocDetail(iddoc);
+			
+			response.setId_server("Server");
+			response.setMessage("Doc List");
+			response.setListings(listings);
+			return response;
 		} catch (Exception e) {
 			throw e;
 		}
@@ -279,6 +357,7 @@ public class DocApi {
 			doc.setDocNumber(0);
 			doc.setDocRef(doc_ref);
 			doc.setDocOrigin("Server");
+			doc.setDocDate(new Timestamp(new Date().getTime()));
 			doc.setIdflow(idflow);
 			doc.setIdstep(idstep);
 			doc.setIdsite(idlocation);
@@ -292,6 +371,7 @@ public class DocApi {
 			}
 			doc = documentRepository.save(doc);
 			doc.setDocNumber(doc.getId());
+			doc.setFilterType(2);
 			doc = documentRepository.save(doc);
 			//insert 
 			List<DocumentsDetail> listDocDet = documentDetailRepository.findByIddoc(iddoc_template);
@@ -307,6 +387,39 @@ public class DocApi {
 			docNewResp.setMessage("Doc Creato");
 			docNewResp.setDocument_id(doc.getId());
 			return docNewResp;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	
+	@GetMapping("/getEpcHistory")
+	public LocationBySiteResp getDocTemplate(@RequestParam(value = "epc", required = false) String epc) throws Exception {
+
+		try {
+			LocationBySiteResp res = new LocationBySiteResp();
+			List<ILocationBySite> list = documentRepository.getEpcHistory(epc);
+			res.setId_server("Server");
+			res.setMessage("Epc History");
+			res.setListings(list);
+			return res;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	@GetMapping("/getEpcHistory")
+	public LocationBySiteResp getEpcLocationBySite(@RequestParam(value = "sku", required = false) String sku,
+			@RequestParam(value = "epc", required = false) String epc,
+			@RequestParam(value = "idsite", required = false) String idsite) throws Exception {
+
+		try {
+			LocationBySiteResp res = new LocationBySiteResp();
+			List<ILocationBySite> list = documentRepository.getSkuLocationBySite(sku, epc, idsite);
+			res.setId_server("Server");
+			res.setMessage("Epc Status By Site");
+			res.setListings(list);
+			return res;
 		} catch (Exception e) {
 			throw e;
 		}

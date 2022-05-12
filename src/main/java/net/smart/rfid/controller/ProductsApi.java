@@ -120,7 +120,8 @@ public class ProductsApi {
 	
 	
 	@GetMapping("/skuStock")
-	public ProductStockSkuResp getSkuStock(@RequestParam(value = "sku", required = true)String sku, @RequestParam(value = "idsite", required = true)Integer idsite) throws Exception {
+	public ProductStockSkuResp getSkuStock(@RequestParam(value = "sku", required = true)String sku, 
+			@RequestParam(value = "idsite", required = true)Integer idsite) throws Exception {
 		try {
 			ProductStockSkuResp resp = new ProductStockSkuResp();
 			List<ProductStockSku> listProducts = productsRepository.getStockBarcode(sku, idsite);
@@ -205,10 +206,13 @@ public class ProductsApi {
 	
 	
 	@GetMapping("/getStockAnag5")
-	public ProductStockAnag4Resp getStockAnag5(@RequestParam(value = "id_customer", required = true)Integer idCustomer) throws Exception {
+	public ProductStockAnag4Resp getStockAnag5(@RequestParam(value = "id_customer", required = true) Integer idCustomer,
+			@RequestParam(value = "offset", required = true) Integer offset,
+			@RequestParam(value = "limit", required = true) Integer limit)
+	throws Exception {
 		try {
 			ProductStockAnag4Resp resp = new ProductStockAnag4Resp();
-			List<ProductStockAnag4> listProducts = productsRepository.getStockAnag4(idCustomer);
+			List<ProductStockAnag4> listProducts = productsRepository.getStockAnag5(idCustomer, offset, limit);
 			if (listProducts.size() > 0) {
 				resp.setListings(listProducts);
 			}
@@ -223,10 +227,10 @@ public class ProductsApi {
 	
 	
 	@GetMapping("/getSellStock")
-	public ProductSellStockResp getSellStock(@RequestParam(value = "idSite", required = true)Integer idSite, @RequestParam(value = "sku", required = true)String sku) throws Exception {
+	public ProductSellStockResp getSellStock(@RequestParam(value = "idsite", required = true)Integer idsite, @RequestParam(value = "sku", required = true)String sku) throws Exception {
 		try {
 			ProductSellStockResp resp = new ProductSellStockResp();
-			List<ProductSellStock> listProducts = productsRepository.getSellStock(idSite, sku);
+			List<ProductSellStock> listProducts = productsRepository.getSellStock(idsite, sku);
 			if (listProducts.size() > 0) {
 				resp.setListings(listProducts);
 			}
@@ -240,10 +244,10 @@ public class ProductsApi {
 	
 	
 	@GetMapping("/getSellStock2")
-	public ProductSellStock2Resp getSellStock2(@RequestParam(value = "idSite", required = true)Integer idSite, @RequestParam(value = "epc", required = true)String epc) throws Exception {
+	public ProductSellStock2Resp getSellStock2(@RequestParam(value = "idsite", required = true)Integer idsite, @RequestParam(value = "epc", required = true)String epc) throws Exception {
 		try {
 			ProductSellStock2Resp resp = new ProductSellStock2Resp();
-			List<ProductSellStock2> listProducts = productsRepository.getSellStock2(idSite, epc);
+			List<ProductSellStock2> listProducts = productsRepository.getSellStock2(idsite, epc);
 			if (listProducts.size() > 0) {
 				resp.setListings(listProducts);
 			}

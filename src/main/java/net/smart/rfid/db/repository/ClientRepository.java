@@ -52,8 +52,10 @@ public interface ClientRepository extends JpaSpecificationExecutor<Clients>, Jpa
 	
 	
 	
-	@Query(value = "select (SELECT case when json_agg(y.value)\\:\\:text = '[null]' then '[]'\\:\\: json else json_agg(y.value)\\:\\: json end AS json_agg "
-			+ "FROM filters y where type = 'C' and id_customer in (select id_customer from clients where mac = ?1)) AS prefix", nativeQuery=true )
+//	@Query(value = "select (SELECT case when json_agg(y.value)\\:\\:text = '[null]' then '[]'\\:\\: json else json_agg(y.value)\\:\\: json end AS json_agg "
+//			+ "FROM filters y where type = 'C' and id_customer in (select id_customer from clients where mac = ?1)) AS prefix", nativeQuery=true )
+	@Query(value = "select ( SELECT case when json_agg(y.cprefix)\\:\\:text = '[null]' then '[]'\\:\\:json else json_agg(y.cprefix)\\:\\:json end AS json_agg "
+			+ "FROM vw_cprefix y where id_customer in (select id_customer from clients where mac = ?1)) AS prefix ", nativeQuery=true )
 	public List<CompanyPrefix>  getCompanyPrefix(String mac) throws Exception;
 	
 	public interface CompanyPrefix {
@@ -72,6 +74,8 @@ public interface ClientRepository extends JpaSpecificationExecutor<Clients>, Jpa
 	}
 	
 	
+	
+	
 	@Query(value = "select c.id_customer, zpl from printers_templates t"
 			+ "	join clients c on c.id_customer = t.id_customer "
 			+ "	where c.id = ?1", nativeQuery=true )
@@ -84,6 +88,16 @@ public interface ClientRepository extends JpaSpecificationExecutor<Clients>, Jpa
 	
 	
 	
+	
+	public interface ILocation {
+		Integer getId();
+		Integer getIdsite();
+		String getDescription();
+	}
+	
+	@Query(value = "select id, idsite, description from location "
+			+ "where id_customer = ?1 and idsite = ?2", nativeQuery=true )
+	public List<ILocation>  getLocation(Integer idCustomer, Integer idSite) throws Exception;
 	
 	
 	

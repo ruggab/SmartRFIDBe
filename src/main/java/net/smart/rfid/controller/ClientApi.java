@@ -17,9 +17,13 @@ import net.smart.rfid.db.repository.ClientRepository.ClientConfig;
 import net.smart.rfid.db.repository.ClientRepository.ClientConfigScanPrint;
 import net.smart.rfid.db.repository.ClientRepository.CompanyPrefix;
 import net.smart.rfid.db.repository.ClientRepository.CompanyStock;
+import net.smart.rfid.db.repository.ClientRepository.ILocation;
+import net.smart.rfid.db.repository.DocumentRepository.DocumentsFilter;
 import net.smart.rfid.response.ClientResp;
 import net.smart.rfid.response.ClientRespQC;
 import net.smart.rfid.response.ClientRespSP;
+import net.smart.rfid.response.DocResp;
+import net.smart.rfid.response.LocationResp;
 
 @RestController
 @RequestMapping("")
@@ -191,6 +195,25 @@ public class ClientApi {
 				}
 			}
 			return clientRespQC;
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	@GetMapping("/getLocation")
+	public LocationResp getLocations(
+			@RequestParam(value = "id_customer", required = true) Integer id_customer,
+			@RequestParam(value = "id_site", required = true) Integer id_site) throws Exception {
+		try {
+			
+			LocationResp locationResp = new LocationResp();
+			List<ILocation> locations = clientRepository.getLocation(id_customer, id_site);
+			
+			locationResp.setId_server("Server");
+			locationResp.setMessage("Locations");
+			locationResp.setListings(locations);
+			return locationResp;
+			
 		} catch (Exception e) {
 			throw e;
 		}

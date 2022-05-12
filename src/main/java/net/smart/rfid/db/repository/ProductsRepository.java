@@ -104,8 +104,9 @@ public interface ProductsRepository extends JpaSpecificationExecutor<net.smart.r
 		Date getTs();
 	}
 	
-	@Query(value = "select distinct epc from scanner_detail sd join documents d on d.id = sd.iddoc "
-			+ "where doc_date\\:\\:date > (select x.doc_date\\:\\:date from documents x where id = :iddoc) and epc is not null ", nativeQuery=true )
+//	@Query(value = "select distinct epc from scanner_detail sd join documents d on d.id = sd.iddoc "
+//			+ "where doc_date\\:\\:date > (select x.doc_date\\:\\:date from documents x where id = :iddoc) and epc is not null ", nativeQuery=true )
+	@Query(value = "select '' as epc from scanner_detail limit 1 ", nativeQuery=true )
 	public List<String>  getEPCExclude(@Param ("iddoc") Integer iddoc) throws Exception;
 	
 	@Query(value = "select p.code, p.description, p.sku, count(epc)  from stockdiary "

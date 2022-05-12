@@ -17,4 +17,6 @@ public interface StepTypeRepository extends JpaSpecificationExecutor<StepType>, 
 	public StepType  getDocTypeByStep(Integer idStep) throws Exception;
 	
 	
+	
+	
 }
