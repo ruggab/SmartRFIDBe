@@ -6,11 +6,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
-import com.impinj.octane.AutoStartMode;
-import com.impinj.octane.AutoStopMode;
-import com.impinj.octane.GpoMode;
-import com.impinj.octane.OctaneSdkException;
-import com.impinj.octane.SearchMode;
 
 
 public class Utils {

@@ -3,8 +3,8 @@ package net.smart.rfid.controller;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +31,7 @@ import net.smart.rfid.response.Response;
 @RequestMapping("")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ScannerApi {
-	Logger logger = Logger.getLogger(ScannerApi.class);
+	Logger logger = Logger.getLogger("ScannerApi");
 
 	@Autowired
 	private ScannerRepository scannerRepository;
@@ -73,7 +73,7 @@ public class ScannerApi {
 					try {
 						scannerDetail.setIdlocation(new Long(row[2]));
 					} catch (Exception e) {
-						logger.error(e.getMessage());
+						logger.info(e.getMessage());
 					}
 					scannerDetail.setIddoc(new Long(iddoc));
 					scannerDetail.setIdscan(scanner.getIdscan());
@@ -122,7 +122,7 @@ public class ScannerApi {
 							try {
 								scannerDetail.setIdlocation(new Long(row[2]));
 							} catch (Exception e) {
-								logger.error(e.getMessage());
+								logger.info(e.getMessage());
 							}
 
 							scannerDetailRepository.save(scannerDetail);
