@@ -1,8 +1,8 @@
 package net.smart.rfid.controller;
 
 import java.util.List;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +32,7 @@ import net.smart.rfid.response.Response;
 @RequestMapping("")
 @CrossOrigin(origins = "http://localhost:4200")
 public class DocApi {
-	Logger logger = Logger.getLogger(DocApi.class);
+	Logger logger = Logger.getLogger("DocApi");
 
 	@Autowired
 	private DocumentRepository documentRepository;
@@ -74,11 +74,14 @@ public class DocApi {
 	}
 
 	@GetMapping("/getDocDet")
-	public DocDetailResp getDocDet(@RequestParam(value = "id", required = false) Integer id) throws Exception {
+	public DocDetailResp getDocDet(@RequestParam(value = "iddoc", required = false) Integer iddoc) throws Exception {
 
 		try {
+			
+			System.out.println("****** "+iddoc);
+			
 			DocDetailResp docDetailResp = new DocDetailResp();
-			List<DocDetail> docFilterList = documentRepository.getDocDetail(id);
+			List<DocDetail> docFilterList = documentRepository.getDocDetail(iddoc);
 			docDetailResp.setId_server("Server");
 			docDetailResp.setMessage("Doc List");
 			docDetailResp.setListings(docFilterList);
